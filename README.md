@@ -1,18 +1,26 @@
 
-# Soufflé Test Kitchen 02 (MVP) — Neutral Branding + Share Cards
+# Soufflé Test Kitchen 02 — Figma‑Style One‑Pager (MVP)
 
-This package updates the header copy (neutral) and adds social share metadata & images.
+This version adds three things:
+1) **Company branding inputs** — paste a logo URL or upload an image, set company name, and write an About blurb.
+2) **Editable headline metrics** — Market Size, White Space Segments, Data Confidence, Time to Market.
+3) **Export a 16:9 one‑pager** — Download as PNG or PDF (exact 1920×1080).
 
-## Deploy (Vercel via GitHub)
-1. Create a new public repo (e.g., `souffle-test-kitchen-02`).
-2. Upload: `index.html`, `vercel.json`, `README.md`, `social.png`, `favicon.png`.
-3. In Vercel: New Project → Import Git Repository → select repo.
-   - Framework Preset: **Other**
-   - Build Command: *(leave blank)*
-   - Output Directory: *(leave blank)*
-   - Root Directory: `/`
-4. Deploy.
+No build step. Pure static site.
 
-### Social Share
-- `social.png` is used for Open Graph/Twitter previews.
-- `favicon.png` is the browser tab icon.
+## Deploy (GitHub → Vercel)
+1. Create/Use your existing repo, upload these files to the repo root:
+   - `index.html`
+   - `vercel.json`
+   - `README.md`
+2. In Vercel → New Project → Import Git Repository → Framework: **Other** → Build Command: *(blank)* → Output Dir: *(blank)* → Deploy.
+
+## Use
+- Open the site → Fill in the controls (name, logo URL or upload, About, metrics).
+- Click **Apply** to update the one‑pager preview.
+- Click **Download One‑Pager (PNG/PDF)**.
+- Tip: If the logo is from an external URL, prefer HTTPS and CORS‑friendly hosts for best export results.
+
+## Notes
+- Charts are rendered client‑side with Chart.js (CDN). Exports use `html2canvas` + `jsPDF`.
+- If a CDN is blocked in a network, redeploy from another network or swap CDNs.
