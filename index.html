@@ -3,69 +3,74 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Soufflé Test Kitchen — Single-Company Edition</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Soufflé Test Kitchen — Single-Company + Insights</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  *{box-sizing:border-box} body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#2d3748}
-  .wrap{max-width:1440px;margin:0 auto;min-height:100vh;display:grid;gap:20px;padding:20px}
-  .card{background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.1);padding:20px}
-  .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .logo{font-size:24px;font-weight:800;color:#667eea;letter-spacing:.5px}
-  .badge{background:linear-gradient(135deg,#ff6b6b,#ffd93d);color:#fff;padding:6px 12px;border-radius:14px;font-size:11px;font-weight:800}
-  .title{font-size:24px;font-weight:800} .subtitle{color:#718096;margin-top:4px}
-  .toolbar{position:sticky;top:10px;z-index:10;margin:10px 0;padding:8px;background:rgba(255,255,255,.9);border:1px solid #e2e8f0;border-radius:12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-  .btn{background:#667eea;color:#fff;border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(102,126,234,.25)}
+  :root{--ink:#1a202c;--muted:#718096;--card:#fff;--line:#e2e8f0;--accent:#667eea;--g1:#ff6b6b;--g2:#ffd93d}
+  *{box-sizing:border-box} body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:var(--ink)}
+  .wrap{max-width:1440px;margin:0 auto;min-height:100vh;padding:20px}
+  .card{background:rgba(255,255,255,.98);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 40px rgba(0,0,0,.08);padding:18px;margin-bottom:16px}
+  .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+  .title{font-size:26px;font-weight:800}.sub{color:var(--muted)}
+  .pill{border-radius:999px;padding:8px 12px;font-weight:800;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff}
+  .toolbar{position:sticky;top:10px;z-index:10;margin:10px 0;padding:8px;background:#fff;border:1px solid var(--line);border-radius:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer;box-shadow:0 6px 14px rgba(102,126,234,.25)}
   .btn.ghost{background:#2d3748}
   .controls{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
   .field{grid-column:span 3;display:flex;flex-direction:column;gap:6px}
   .field.wide{grid-column:span 6}
-  label{font-size:12px;font-weight:700;color:#4a5568}
-  input,textarea,select{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;background:#fff;font:inherit}
+  label{font-size:12px;font-weight:800;color:#4a5568}
+  input,textarea,select{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;font:inherit}
   textarea{min-height:64px;resize:vertical}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .chart-title{font-weight:800;margin-bottom:10px}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
-  .kpi{background:#fff;border:1px solid #edf2f7;border-radius:12px;padding:12px;text-align:center}
-  .kpi .v{font-size:28px;font-weight:800;color:#2d3748}.kpi .l{font-size:12px;text-transform:uppercase;color:#718096;letter-spacing:.5px}
-  .metric{grid-column:span 3;background:#fff;border:1px solid #edf2f7;border-radius:12px;padding:10px}
-  .metric .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-  .metric input[type=range]{width:100%}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
-  .pill.green{background:#c6f6d5;color:#22543d}
-  .pill.yellow{background:#fefcbf;color:#744210}
-  .pill.orange{background:#fbd38d;color:#7b341e}
-  .pill.red{background:#fed7d7;color:#742a2a}
-  .onewrap{padding:16px}
-  .note{color:#4a5568;font-size:13px;margin-bottom:8px}
-  .one{width:1920px;height:1080px;background:#fff;color:#1a202c;border-radius:18px;padding:28px;display:grid;grid-template-rows:auto auto 1fr auto;gap:16px;border:1px solid #edf2f7}
-  .op-head{display:grid;grid-template-columns:80px 1fr 220px;gap:16px;align-items:center}
-  .op-logo{width:80px;height:80px;border-radius:12px;border:1px solid #e2e8f0;display:grid;place-items:center;overflow:hidden}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;min-height:110px}
+  .kpi .l{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+  .kpi .v{font-size:26px;font-weight:800;margin-top:6px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .chart-title{font-weight:800;margin-bottom:8px}
+  .insights{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .ins-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .ins-card h4{margin:0 0 6px 0}
+  .onewrap{padding:12px}
+  .note{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .one{width:1920px;height:1080px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;grid-template-rows:auto auto auto 1fr auto;gap:12px}
+  .op-head{display:grid;grid-template-columns:80px 1fr 220px;gap:12px;align-items:center}
+  .op-logo{width:80px;height:80px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden}
   .op-logo img{max-width:100%;max-height:100%;object-fit:contain}
-  .op-title h1{margin:0;font-size:36px}.op-title p{margin:0;color:#4a5568}
-  .op-badge{justify-self:end;align-self:start;background:linear-gradient(135deg,#ff6b6b,#ffd93d);color:#fff;padding:8px 14px;border-radius:18px;font-weight:800;letter-spacing:.5px}
-  .op-about{background:#f7fafc;border:1px solid #edf2f7;border-radius:12px;padding:12px 14px;font-size:16px;color:#2d3748}
-  .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .cardbox{background:#fff;border:1px solid #edf2f7;border-radius:12px;padding:12px}
-  .foot{display:flex;justify-content:space-between;align-items:center;color:#4a5568;font-size:14px}.brandmark{font-weight:800;color:#667eea}
-  @media (max-width:1100px){.grid2{grid-template-columns:1fr}.one{transform:scale(.5);transform-origin:top left;width:960px;height:540px}}
+  .op-title h1{margin:0;font-size:36px}.op-title p{margin:0;color:var(--muted)}
+  .op-badge{justify-self:end;align-self:start;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border-radius:18px;padding:8px 14px;font-weight:800}
+  .op-about{background:#f7fafc;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .op-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .op-kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+  .op-kpi .v{font-size:24px;font-weight:800}.op-kpi .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .op-insights{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+  .op-ins-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .op-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .brandmark{font-weight:800;color:var(--accent)}
+  .foot{display:flex;justify-content:space-between;align-items:center;color:#4a5568}
+  @media (max-width:1100px){.grid2{grid-template-columns:1fr}.insights{grid-template-columns:1fr}.one{transform:scale(.5);transform-origin:top left;width:960px;height:540px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <section class="card">
-    <div class="brand"><div class="logo">soufflé</div><div class="badge">TEST KITCHEN</div></div>
-    <div class="title" id="pageTitle">Single-Company Scorecard & One-Pager</div>
-    <div class="subtitle">Drop in any company, fill criteria, get a Direction, export a 16:9 slide.</div>
+    <div class="header">
+      <div>
+        <div class="title" id="pageTitle">Single-Company Scorecard & One-Pager</div>
+        <div class="sub">Drop in any company, fill criteria, get a Direction, export a 16:9 slide.</div>
+      </div>
+      <div class="pill" id="directionPill">Direction</div>
+    </div>
 
     <div class="toolbar">
       <button id="apply" class="btn">Apply</button>
       <button id="png" class="btn ghost">Download One-Pager (PNG)</button>
       <button id="pdf" class="btn ghost">Download One-Pager (PDF)</button>
-      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-        <span>Direction:</span> <span id="directionPill" class="pill yellow">Pilot & Validate</span>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;color:#4a5568">
+        <strong>Why now:</strong> <span id="whyNow">Set metrics to generate rationale.</span>
       </div>
     </div>
 
@@ -74,86 +79,93 @@
         <select id="preset">
           <option value="blank">Blank</option>
           <option value="tennant">Tennant (sample)</option>
-          <option value="redmond">Redmond (placeholder)</option>
+          <option value="yon">Yondr (sample)</option>
         </select>
       </div>
-
-      <div class="field"><label>Company</label><input id="name" type="text" placeholder="e.g., Tennant Company"></div>
+      <div class="field"><label>Company</label><input id="name" placeholder="e.g., Yondr"></div>
       <div class="field"><label>Logo URL</label><input id="logoUrl" type="url" placeholder="https://…"></div>
       <div class="field"><label>Logo Upload</label><input id="logoFile" type="file" accept="image/*"></div>
       <div class="field wide"><label>About / Context</label><textarea id="about" placeholder="Short description, positioning, or scope notes."></textarea></div>
-
-      <div class="field"><label>Addressable Market</label><input id="kpiMarket" type="text" value="$—"></div>
-      <div class="field"><label>White Space Segments</label><input id="kpiSegments" type="text" value="—"></div>
-      <div class="field"><label>Data Confidence</label><input id="kpiConfidence" type="text" value="—"></div>
-      <div class="field"><label>Time to Market</label><input id="kpiTime" type="text" value="—"></div>
-
-      <div class="metric">
-        <label>Market Adjacency Potential</label>
-        <div class="row"><input id="m1" type="range" min="1" max="5" step="1" value="3"><strong id="m1v">3</strong></div>
-      </div>
-      <div class="metric">
-        <label>Design Modernization Need</label>
-        <div class="row"><input id="m2" type="range" min="1" max="5" step="1" value="3"><strong id="m2v">3</strong></div>
-      </div>
-      <div class="metric">
-        <label>Brand Awareness vs Product Appeal</label>
-        <div class="row"><input id="m3" type="range" min="1" max="5" step="1" value="3"><strong id="m3v">3</strong></div>
-      </div>
-      <div class="metric">
-        <label>Distribution Gap</label>
-        <div class="row"><input id="m4" type="range" min="1" max="5" step="1" value="3"><strong id="m4v">3</strong></div>
-      </div>
-      <div class="metric">
-        <label>Manufacturing Agility</label>
-        <div class="row"><input id="m5" type="range" min="1" max="5" step="1" value="3"><strong id="m5v">3</strong></div>
-      </div>
+      <div class="field"><label>Addressable Market</label><input id="kpiMarket" value="$—"></div>
+      <div class="field"><label>White Space Segments</label><input id="kpiSegments" value="—"></div>
+      <div class="field"><label>Data Confidence</label><input id="kpiConfidence" value="—"></div>
+      <div class="field"><label>Time to Market</label><input id="kpiTime" value="—"></div>
+      <div class="field"><label>Market Adjacency Potential</label><input id="m1" type="range" min="1" max="5" step="1" value="3"><small id="m1v">3</small></div>
+      <div class="field"><label>Design Modernization Need</label><input id="m2" type="range" min="1" max="5" step="1" value="3"><small id="m2v">3</small></div>
+      <div class="field"><label>Brand Awareness vs Product Appeal</label><input id="m3" type="range" min="1" max="5" step="1" value="3"><small id="m3v">3</small></div>
+      <div class="field"><label>Distribution Gap</label><input id="m4" type="range" min="1" max="5" step="1" value="3"><small id="m4v">3</small></div>
+      <div class="field"><label>Manufacturing Agility</label><input id="m5" type="range" min="1" max="5" step="1" value="3"><small id="m5v">3</small></div>
     </div>
 
-    <div class="grid2">
-      <div class="card">
-        <div class="chart-title">Radar: 5-Metric Score</div>
-        <div style="position:relative;height:320px"><canvas id="radarChart"></canvas></div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">Addressable Market</div><div class="v" id="k1">$—</div></div>
+      <div class="kpi"><div class="l">White Space Segments</div><div class="v" id="k2">—</div></div>
+      <div class="kpi"><div class="l">Data Confidence</div><div class="v" id="k3">—</div></div>
+      <div class="kpi"><div class="l">Time to Market</div><div class="v" id="k4">—</div></div>
+    </div>
+  </section>
+
+  <section class="card grid2">
+    <div>
+      <div class="chart-title">Radar: 5-Metric Score</div>
+      <div style="position:relative;height:320px"><canvas id="radarChart"></canvas></div>
+    </div>
+    <div>
+      <div class="chart-title">Matrix: Revenue Potential vs. Execution Complexity</div>
+      <div style="position:relative;height:320px"><canvas id="matrixChart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="chart-title">Insights</div>
+    <div class="insights">
+      <div class="ins-card">
+        <h4>Top Drivers</h4>
+        <ul id="drivers" style="margin:0 0 6px 18px;padding:0"></ul>
       </div>
-      <div class="card">
-        <div class="chart-title">Matrix: Revenue Potential vs. Execution Complexity</div>
-        <div style="position:relative;height:320px"><canvas id="matrixChart"></canvas></div>
+      <div class="ins-card">
+        <h4>Key Constraints</h4>
+        <ul id="constraints" style="margin:0 0 6px 18px;padding:0"></ul>
+      </div>
+      <div class="ins-card">
+        <h4>Next Moves (90 Days)</h4>
+        <ul id="moves" style="margin:0 0 6px 18px;padding:0"></ul>
       </div>
     </div>
   </section>
 
-  <section class="onewrap card">
+  <section class="card onewrap">
     <div class="note">One-Pager (exact 1920×1080 export area)</div>
     <div id="one" class="one">
       <div class="op-head">
-        <div class="op-logo"><img id="opLogo" alt="Company Logo"></div>
+        <div class="op-logo"><img id="opLogo" alt="Logo"></div>
         <div class="op-title">
           <h1 id="opTitle">Company — Market Expansion Dashboard</h1>
           <p>Soufflé Test Kitchen — White Space & Design Strategy</p>
         </div>
-        <div class="op-badge" id="opDirection">DIRECTION</div>
+        <div class="op-badge" id="opDirection">Direction</div>
       </div>
-
-      <div class="op-about" id="opAbout">Add an about/context blurb above and click Apply.</div>
-
-      <div class="kpis">
-        <div class="kpi"><div class="v" id="k1">$—</div><div class="l">Addressable Market</div></div>
-        <div class="kpi"><div class="v" id="k2">—</div><div class="l">White Space Segments</div></div>
-        <div class="kpi"><div class="v" id="k3">—</div><div class="l">Data Confidence</div></div>
-        <div class="kpi"><div class="v" id="k4">—</div><div class="l">Time to Market</div></div>
+      <div class="op-about" id="opAbout">—</div>
+      <div class="op-kpis">
+        <div class="op-kpi"><div class="v" id="ok1">$—</div><div class="l">Addressable Market</div></div>
+        <div class="op-kpi"><div class="v" id="ok2">—</div><div class="l">White Space Segments</div></div>
+        <div class="op-kpi"><div class="v" id="ok3">—</div><div class="l">Data Confidence</div></div>
+        <div class="op-kpi"><div class="v" id="ok4">—</div><div class="l">Time to Market</div></div>
       </div>
-
-      <div class="charts">
-        <div class="cardbox">
-          <div style="font-weight:800;margin-bottom:6px">Radar: 5-Metric Score</div>
-          <canvas id="opRadar" width="600" height="320"></canvas>
+      <div class="op-insights">
+        <div class="op-ins-card">
+          <div style="font-weight:800;margin-bottom:6px">Why now</div>
+          <div id="opWhy">—</div>
         </div>
-        <div class="cardbox">
-          <div style="font-weight:800;margin-bottom:6px">Matrix Position</div>
-          <canvas id="opMatrix" width="600" height="320"></canvas>
+        <div class="op-ins-card">
+          <div style="font-weight:800;margin-bottom:6px">Next Moves</div>
+          <ul id="opMoves" style="margin:0 0 0 18px;padding:0"></ul>
         </div>
       </div>
-
+      <div class="op-charts">
+        <div class="op-ins-card"><div style="font-weight:800;margin-bottom:6px">Radar: 5-Metric Score</div><canvas id="opRadar" width="600" height="320"></canvas></div>
+        <div class="op-ins-card"><div style="font-weight:800;margin-bottom:6px">Matrix Position</div><canvas id="opMatrix" width="600" height="320"></canvas></div>
+      </div>
       <div class="foot">
         <div>Generated by the <span class="brandmark">Soufflé Test Kitchen</span></div>
         <div id="stamp"></div>
@@ -163,128 +175,176 @@
 </div>
 
 <script>
-  // Helpers
   const $ = id => document.getElementById(id);
 
-  // Presets (no storage, just quick loaders)
   const PRESETS = {
-    blank: {
-      name:'', logoUrl:'', about:'',
-      kpiMarket:'$—', kpiSegments:'—', kpiConfidence:'—', kpiTime:'—',
-      m1:3, m2:3, m3:3, m4:3, m5:3
-    },
-    tennant: {
-      name:'Tennant Company',
-      logoUrl:'',
-      about:'Global cleaning equipment leader; adjacency with facilities & hygiene — experience via Excel hand dryer category informs channel & compliance patterns.',
-      kpiMarket:'$—', kpiSegments:'—', kpiConfidence:'—', kpiTime:'—',
-      m1:4, m2:3, m3:3, m4:4, m5:4
-    },
-    redmond: {
-      name:'Redmond (placeholder)',
-      logoUrl:'',
-      about:'Demo placeholder for brand discussions.',
-      kpiMarket:'$—', kpiSegments:'—', kpiConfidence:'—', kpiTime:'—',
-      m1:3, m2:3, m3:3, m4:3, m5:3
-    }
+    blank:{name:'',logoUrl:'',about:'',k1:'$—',k2:'—',k3:'—',k4:'—',m1:3,m2:3,m3:3,m4:3,m5:3},
+    tennant:{name:'Tennant Company',logoUrl:'',about:'Global cleaning equipment leader; adjacency with facilities & hygiene.',k1:'$—',k2:'—',k3:'—',k4:'—',m1:4,m2:3,m3:3,m4:4,m5:4},
+    yon:{name:'Yondr',logoUrl:'',about:"Established leader helping educators, artists, families, organizations, and businesses create phone-free spaces.",k1:'$—',k2:'—',k3:'—',k4:'—',m1:3,m2:3,m3:3,m4:3,m5:3}
   };
 
-  // Scoring
-  function computeScores(d){
-    const rev = (d.m1 + d.m3 + d.m4)/3;          // revenue potential
-    const comp = (d.m2 + (6 - d.m5))/2;          // execution complexity
-    let direction='Pilot & Validate', cls='yellow';
-    if(rev>=3.5 && comp<3) { direction='Pursue Now'; cls='green'; }
-    else if(rev>=3.5 && comp>=3) { direction='Pilot & Resource Plan'; cls='orange'; }
-    else if(rev<3.5 && comp<3) { direction='Quick Win / Content'; cls='yellow'; }
-    else { direction='Defer / Partner'; cls='red'; }
-    return {rev, comp, direction, cls};
+  function compute(d){
+    const rev = (d.m1 + d.m3 + d.m4)/3;
+    const comp = (d.m2 + (6 - d.m5))/2;
+    let direction='Pilot & Validate';
+    if(rev>=3.5 && comp<3) direction='Pursue Now';
+    else if(rev>=3.5 && comp>=3) direction='Pilot & Resource Plan';
+    else if(rev<3.5 && comp<3) direction='Quick Win / Content';
+    else direction='Defer / Partner';
+    return {rev, comp, direction};
   }
 
-  // Charts
+  function bullets(d){
+    const drivers = [
+      ['Market adjacency', d.m1],
+      ['Distribution fit', d.m4],
+      ['Brand pull opportunity', d.m3],
+      ['Manufacturing agility', d.m5]
+    ].sort((a,b)=>b[1]-a[1]).slice(0,2);
+    const constraints = [
+      ['Design modernization lift', d.m2],
+      ['Ops/Manufacturing rigidity', 6-d.m5],
+      ['Channel readiness gap', 6-d.m4]
+    ].sort((a,b)=>b[1]-a[1]).slice(0,2);
+    return {drivers, constraints};
+  }
+
+  function moves(direction){
+    if(direction==='Pursue Now') return [
+      'Line up 2–3 lighthouse pilots',
+      'Scope MVP design refresh, avoid replatform',
+      'Lock target channel partners & SLA'
+    ];
+    if(direction==='Pilot & Resource Plan') return [
+      'Run a 6–8 week pilot while scoping redesign',
+      'Stand up a cross‑functional tiger team',
+      'Define success metrics and procurement path'
+    ];
+    if(direction==='Quick Win / Content') return [
+      'Launch thought-leadership content/PR',
+      'Low‑lift design polish to product hero shots',
+      'Capture 3 case studies to build demand'
+    ];
+    return [
+      'Explore partnership/white‑label options',
+      'Revisit after brand/channel signal improves',
+      'Maintain watchlist and quarterly review'
+    ];
+  }
+
+  function rationale(d){
+    const {drivers, constraints} = bullets(d);
+    return `${drivers[0][0]} and ${drivers[1][0]} vs ${constraints[0][0].toLowerCase()}`;
+  }
+
+  function chartData(d){
+    return {
+      radar:{
+        labels:['Market Adjacency','Design Modernization','Brand vs Appeal','Distribution Gap','Mfg Agility'],
+        datasets:[{label:d.name||'Company',data:[d.m1,d.m2,d.m3,d.m4,d.m5],backgroundColor:'rgba(102,126,234,.2)',borderColor:'#667eea',borderWidth:2,pointRadius:3}]
+      },
+      matrix:{
+        datasets:[{label:'Position',data:[{x:(d.m1+d.m3+d.m4)/3,y:(d.m2+(6-d.m5))/2}],backgroundColor:'#ff6b6b'}]
+      }
+    };
+  }
+
   let radar, matrix, opRadar, opMatrix;
   function renderCharts(d){
-    const radarData = {
-      labels:['Market Adjacency','Design Modernization','Brand vs Appeal','Distribution Gap','Mfg Agility'],
-      datasets:[{label:d.name||'Company',data:[d.m1,d.m2,d.m3,d.m4,d.m5],backgroundColor:'rgba(102,126,234,.2)',borderColor:'#667eea',borderWidth:2,pointRadius:3}]
-    };
+    const cd = chartData(d);
+    const scales = {x:{min:1,max:5,title:{display:true,text:'Revenue Potential'}}, y:{min:1,max:5,title:{display:true,text:'Execution Complexity'}}};
     if(radar) radar.destroy();
-    radar = new Chart(document.getElementById('radarChart').getContext('2d'), {
-      type:'radar', data:radarData, options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:5,ticks:{stepSize:1}}},plugins:{legend:{display:false}}}
-    });
+    radar = new Chart(document.getElementById('radarChart').getContext('2d'),{type:'radar',data:cd.radar,options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:5,ticks:{stepSize:1}}},plugins:{legend:{display:false}}}});
     if(opRadar) opRadar.destroy();
-    opRadar = new Chart(document.getElementById('opRadar').getContext('2d'), {
-      type:'radar', data:radarData, options:{responsive:false,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:5,ticks:{stepSize:1}}},plugins:{legend:{display:false}}}
-    });
-
-    const {rev, comp} = computeScores(d);
-    const scatterData = { datasets:[{label:'Position', data:[{x:rev, y:comp}], backgroundColor:'#ff6b6b'}] };
-    const scales = { x:{min:1,max:5,title:{display:true,text:'Revenue Potential'}}, y:{min:1,max:5,title:{display:true,text:'Execution Complexity'}} };
+    opRadar = new Chart(document.getElementById('opRadar').getContext('2d'),{type:'radar',data:cd.radar,options:{responsive:false,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:5,ticks:{stepSize:1}}},plugins:{legend:{display:false}}}});
     if(matrix) matrix.destroy();
-    matrix = new Chart(document.getElementById('matrixChart').getContext('2d'), { type:'scatter', data: scatterData, options:{responsive:true,maintainAspectRatio:false,scales,plugins:{legend:{display:false}}} });
+    matrix = new Chart(document.getElementById('matrixChart').getContext('2d'),{type:'scatter',data:cd.matrix,options:{responsive:true,maintainAspectRatio:false,scales,plugins:{legend:{display:false}}}});
     if(opMatrix) opMatrix.destroy();
-    opMatrix = new Chart(document.getElementById('opMatrix').getContext('2d'), { type:'scatter', data: scatterData, options:{responsive:false,maintainAspectRatio:false,scales,plugins:{legend:{display:false}}} });
+    opMatrix = new Chart(document.getElementById('opMatrix').getContext('2d'),{type:'scatter',data:cd.matrix,options:{responsive:false,maintainAspectRatio:false,scales,plugins:{legend:{display:false}}}});
   }
 
   function gather(){
     return {
-      name: $('name').value.trim(),
-      logoUrl: $('logoUrl').value.trim(),
-      about: $('about').value.trim(),
-      kpiMarket: $('kpiMarket').value.trim() || '$—',
-      kpiSegments: $('kpiSegments').value.trim() || '—',
-      kpiConfidence: $('kpiConfidence').value.trim() || '—',
-      kpiTime: $('kpiTime').value.trim() || '—',
+      name:$('name').value.trim(),
+      logoUrl:$('logoUrl').value.trim(),
+      about:$('about').value.trim(),
+      k1:$('kpiMarket').value.trim()||'$—',
+      k2:$('kpiSegments').value.trim()||'—',
+      k3:$('kpiConfidence').value.trim()||'—',
+      k4:$('kpiTime').value.trim()||'—',
       m1:+$('m1').value, m2:+$('m2').value, m3:+$('m3').value, m4:+$('m4').value, m5:+$('m5').value
     };
   }
 
   function applyAll(){
     const d = gather();
-    // Titles/KPIs
-    $('pageTitle').textContent = (d.name? d.name+' — ': '') + 'Single-Company Scorecard & One-Pager';
+    const {direction} = compute(d);
+    const {drivers, constraints} = bullets(d);
+
+    // Header + pill
+    $('pageTitle').textContent = (d.name? d.name+' — ' : '') + 'Single-Company Scorecard & One-Pager';
+    $('directionPill').textContent = direction;
+
+    // KPIs
+    $('k1').textContent=d.k1; $('k2').textContent=d.k2; $('k3').textContent=d.k3; $('k4').textContent=d.k4;
+
+    // Insights (web view)
+    const drv = drivers.map(x=>`<li>${x[0]} (${x[1]}/5)</li>`).join('');
+    const con = constraints.map(x=>`<li>${x[0]}</li>`).join('');
+    $('drivers').innerHTML = drv || '<li>—</li>';
+    $('constraints').innerHTML = con || '<li>—</li>';
+    const mv = moves(direction).map(x=>`<li>${x}</li>`).join('');
+    $('moves').innerHTML = mv;
+
+    // One‑pager mirrors
     $('opTitle').textContent = (d.name||'Company') + ' — Market Expansion Dashboard';
     $('opAbout').textContent = d.about || '—';
-    $('k1').textContent = d.kpiMarket; $('k2').textContent = d.kpiSegments; $('k3').textContent = d.kpiConfidence; $('k4').textContent = d.kpiTime;
-    // Logo
-    if(d.logoUrl) $('opLogo').src = d.logoUrl;
-    // Metrics labels
-    ['m1','m2','m3','m4','m5'].forEach(k => $(k+'v').textContent = $(k).value);
-    // Direction
-    const {direction, cls} = computeScores(d);
-    const pill = $('directionPill');
-    pill.textContent = direction; pill.className = 'pill ' + (cls);
+    $('ok1').textContent=d.k1; $('ok2').textContent=d.k2; $('ok3').textContent=d.k3; $('ok4').textContent=d.k4;
     $('opDirection').textContent = direction;
-    $('stamp').textContent = new Date().toLocaleString();
-    // Charts
+    $('opWhy').textContent = rationale(d);
+    $('opMoves').innerHTML = mv;
+
+    // Logo
+    if(d.logoUrl){ document.getElementById('opLogo').src = d.logoUrl; }
+
+    // Metric labels + charts
+    ['m1','m2','m3','m4','m5'].forEach(k => document.getElementById(k+'v').textContent = document.getElementById(k).value);
     renderCharts(d);
+
+    // stamp
+    $('stamp').textContent = new Date().toLocaleString();
   }
 
-  // Preset loader
-  $('preset').addEventListener('change', () => {
+  // Presets
+  $('preset').addEventListener('change', ()=>{
     const p = PRESETS[$('preset').value] || PRESETS.blank;
-    $('name').value = p.name; $('logoUrl').value = p.logoUrl; $('about').value = p.about;
-    $('kpiMarket').value = p.kpiMarket; $('kpiSegments').value = p.kpiSegments; $('kpiConfidence').value = p.kpiConfidence; $('kpiTime').value = p.kpiTime;
-    $('m1').value = p.m1; $('m2').value = p.m2; $('m3').value = p.m3; $('m4').value = p.m4; $('m5').value = p.m5;
+    $('name').value=p.name; $('logoUrl').value=p.logoUrl; $('about').value=p.about;
+    $('kpiMarket').value=p.k1; $('kpiSegments').value=p.k2; $('kpiConfidence').value=p.k3; $('kpiTime').value=p.k4;
+    $('m1').value=p.m1; $('m2').value=p.m2; $('m3').value=p.m3; $('m4').value=p.m4; $('m5').value=p.m5;
     applyAll();
+  });
+
+  // Live updates
+  ['name','logoUrl','about','kpiMarket','kpiSegments','kpiConfidence','kpiTime','m1','m2','m3','m4','m5'].forEach(id=>{
+    const el = $(id);
+    el.addEventListener('input', ()=>{ if(id.startsWith('m')) $(id+'v').textContent = el.value; });
+    el.addEventListener('change', applyAll);
   });
 
   // Logo upload
   $('logoFile').addEventListener('change', e=>{
-    const f = e.target.files?.[0]; if(!f) return;
-    const r = new FileReader();
-    r.onload = ev => { $('opLogo').src = ev.target.result; };
-    r.readAsDataURL(f);
+    const f=e.target.files?.[0]; if(!f) return;
+    const r=new FileReader(); r.onload=ev=>{ document.getElementById('opLogo').src = ev.target.result; }; r.readAsDataURL(f);
   });
 
-  // Buttons
+  // Export buttons
   $('apply').addEventListener('click', applyAll);
   $('png').addEventListener('click', async ()=>{
-    const el = $('one'); const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
-    const a = document.createElement('a'); a.download='souffle-onepager.png'; a.href = canvas.toDataURL('image/png'); a.click();
+    const el = document.getElementById('one'); const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+    const a = document.createElement('a'); a.download='souffle-onepager.png'; a.href=canvas.toDataURL('image/png'); a.click();
   });
   $('pdf').addEventListener('click', async ()=>{
-    const el = $('one'); const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+    const el = document.getElementById('one'); const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
     const img = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({orientation:'landscape', unit:'px', format:[1920,1080]});
     pdf.addImage(img,'PNG',0,0,1920,1080); pdf.save('souffle-onepager.pdf');

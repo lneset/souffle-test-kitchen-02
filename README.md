@@ -1,21 +1,12 @@
-# Soufflé Test Kitchen 02 — Single-Company Edition
+# Soufflé Test Kitchen 02 — Single-Company + Insights
 
-**Purpose:** Drop in *one* company at a time, fill the criteria (KPIs + 5 metrics), get a computed **Direction**, and export a 16:9 one-pager. No client library. No storage.
+**What’s new vs the basic single‑company build**
+- Auto‑written **Why now** line
+- **Drivers** (top 2) and **Constraints** (top 2) derived from the 5 metrics
+- **Next Moves (90 days)** tailored to the Direction
+- These narratives are also embedded in the **16:9 one‑pager**
 
-**Files**
-- `index.html` — single-company UI, Apply button, PNG/PDF export
-- `vercel.json` — no-cache headers for iteration
+## Deploy
+Upload `index.html` and `vercel.json` to your repo root and redeploy on Vercel.
 
-## Deploy (GitHub → Vercel)
-1. Create/Use your repo. In GitHub → **Add file → Upload files** → drag **index.html** and **vercel.json** into the repo **root**. Commit.
-2. In Vercel, import the repo (Framework: **Other**; Build Command: *(blank)*; Output Dir: *(blank)*). Deploy.
-3. Hard refresh the URL (Cmd+Shift+R / Ctrl+F5).
-
-## Use
-- Optional: pick a **Preset** (Blank / Tennant sample / Redmond placeholder).
-- Enter **Company**, **Logo URL or Upload**, and **About**.
-- Set headline **KPIs** and the **5 metrics**.
-- Click **Apply** → Direction + charts update.
-- Export PNG/PDF from the toolbar.
-
-_Last updated: 2025-08-12T20:50_
+_Last updated: 2025-08-12T21:09_
