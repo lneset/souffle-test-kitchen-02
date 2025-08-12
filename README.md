@@ -1,26 +1,21 @@
+# Soufflé Test Kitchen 02 — Single-Company Edition
 
-# Soufflé Test Kitchen 02 — Figma‑Style One‑Pager (MVP)
+**Purpose:** Drop in *one* company at a time, fill the criteria (KPIs + 5 metrics), get a computed **Direction**, and export a 16:9 one-pager. No client library. No storage.
 
-This version adds three things:
-1) **Company branding inputs** — paste a logo URL or upload an image, set company name, and write an About blurb.
-2) **Editable headline metrics** — Market Size, White Space Segments, Data Confidence, Time to Market.
-3) **Export a 16:9 one‑pager** — Download as PNG or PDF (exact 1920×1080).
-
-No build step. Pure static site.
+**Files**
+- `index.html` — single-company UI, Apply button, PNG/PDF export
+- `vercel.json` — no-cache headers for iteration
 
 ## Deploy (GitHub → Vercel)
-1. Create/Use your existing repo, upload these files to the repo root:
-   - `index.html`
-   - `vercel.json`
-   - `README.md`
-2. In Vercel → New Project → Import Git Repository → Framework: **Other** → Build Command: *(blank)* → Output Dir: *(blank)* → Deploy.
+1. Create/Use your repo. In GitHub → **Add file → Upload files** → drag **index.html** and **vercel.json** into the repo **root**. Commit.
+2. In Vercel, import the repo (Framework: **Other**; Build Command: *(blank)*; Output Dir: *(blank)*). Deploy.
+3. Hard refresh the URL (Cmd+Shift+R / Ctrl+F5).
 
 ## Use
-- Open the site → Fill in the controls (name, logo URL or upload, About, metrics).
-- Click **Apply** to update the one‑pager preview.
-- Click **Download One‑Pager (PNG/PDF)**.
-- Tip: If the logo is from an external URL, prefer HTTPS and CORS‑friendly hosts for best export results.
+- Optional: pick a **Preset** (Blank / Tennant sample / Redmond placeholder).
+- Enter **Company**, **Logo URL or Upload**, and **About**.
+- Set headline **KPIs** and the **5 metrics**.
+- Click **Apply** → Direction + charts update.
+- Export PNG/PDF from the toolbar.
 
-## Notes
-- Charts are rendered client‑side with Chart.js (CDN). Exports use `html2canvas` + `jsPDF`.
-- If a CDN is blocked in a network, redeploy from another network or swap CDNs.
+_Last updated: 2025-08-12T20:50_

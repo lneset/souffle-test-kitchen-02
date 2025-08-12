@@ -1,317 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soufflé Test Kitchen — Market Expansion Dashboard</title>
-  <meta name="description" content="Interactive market expansion dashboard with exportable 16:9 one‑pager." />
-  <meta property="og:title" content="Soufflé Test Kitchen — Market Expansion Dashboard" />
-  <meta property="og:description" content="Add a logo and about blurb, then export a 16:9 one‑pager (PNG/PDF)." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="/social.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Soufflé Test Kitchen — Market Expansion Dashboard" />
-  <meta name="twitter:description" content="Add a logo and about blurb, then export a 16:9 one‑pager (PNG/PDF)." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #2d3748;
-    }
-    .dashboard-container { max-width: 1440px; margin: 0 auto; padding: 24px; min-height: 100vh; }
-    .header, .chart-section, .concepts-section, .methodology-section {
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-      margin-bottom: 24px;
-    }
-    .logo-section { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
-    .logo { font-size: 28px; font-weight: 700; color: #667eea; letter-spacing: 0.5px; }
-    .test-kitchen-badge { background: linear-gradient(135deg, #ff6b6b, #ffd93d); color: #fff; padding: 6px 14px; border-radius: 18px; font-size: 12px; font-weight: 700; }
-    .title { font-size: 24px; font-weight: 700; color: #2d3748; margin-top: 4px; }
-    .subtitle { color: #718096; margin-top: 4px; }
-
-    .controls {
-      display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 10px;
-    }
-    .controls .field { grid-column: span 3; display: flex; flex-direction: column; gap: 6px; }
-    .controls .field.wide { grid-column: span 6; }
-    .controls label { font-size: 12px; font-weight: 600; color: #4a5568; }
-    .controls input, .controls textarea, .controls button {
-      border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; font: inherit; background: #fff;
-    }
-    .controls textarea { min-height: 64px; resize: vertical; }
-    .controls .actions { grid-column: span 12; display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn {
-      background: #667eea; color: #fff; font-weight: 700; border: none; cursor: pointer;
-      transition: transform 0.08s ease; box-shadow: 0 6px 14px rgba(102,126,234,0.25);
-    }
-    .btn.secondary { background: #2d3748; }
-    .btn:active { transform: translateY(1px); }
-
-    .metrics-overview { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 18px; }
-    .metric-card { background: #fff; border-radius: 14px; padding: 16px; text-align: center; border-left: 4px solid; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-    .metric-card.market-size { border-left-color: #667eea; }
-    .metric-card.opportunities { border-left-color: #ff6b6b; }
-    .metric-card.confidence { border-left-color: #4ecdc4; }
-    .metric-card.timeline { border-left-color: #ffd93d; }
-    .metric-value { font-size: 28px; font-weight: 800; }
-    .metric-label { font-size: 12px; color: #718096; letter-spacing: 0.6px; text-transform: uppercase; }
-
-    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    .chart-title { font-weight: 700; margin-bottom: 12px; }
-
-    /* --- 16:9 One-Pager --- */
-    .onepager-wrapper { background: rgba(255,255,255,0.96); border-radius: 20px; padding: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-    .onepager-note { color: #4a5568; font-size: 13px; margin-bottom: 8px; }
-    .onepager {
-      width: 1920px; height: 1080px; background: #ffffff; color: #1a202c; border-radius: 18px; padding: 28px;
-      display: grid; grid-template-rows: auto auto 1fr auto; gap: 16px;
-    }
-    .op-header { display: grid; grid-template-columns: 80px 1fr 220px; gap: 16px; align-items: center; }
-    .op-logo { width: 80px; height: 80px; border-radius: 12px; border: 1px solid #e2e8f0; display: grid; place-items: center; overflow: hidden; }
-    .op-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .op-title { display: flex; flex-direction: column; gap: 6px; }
-    .op-title h1 { margin: 0; font-size: 36px; }
-    .op-title p { margin: 0; color: #4a5568; }
-    .op-badge { justify-self: end; align-self: start; background: linear-gradient(135deg, #ff6b6b, #ffd93d); color: #fff; padding: 8px 14px; border-radius: 18px; font-weight: 800; letter-spacing: 0.5px; }
-
-    .op-about { background: #f7fafc; border: 1px solid #edf2f7; border-radius: 12px; padding: 12px 14px; font-size: 16px; color: #2d3748; }
-
-    .op-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .op-metric { background: #fff; border: 1px solid #edf2f7; border-radius: 12px; padding: 12px; text-align: center; }
-    .op-metric .v { font-size: 28px; font-weight: 800; color: #2d3748; }
-    .op-metric .l { font-size: 12px; text-transform: uppercase; color: #718096; letter-spacing: 0.5px; }
-
-    .op-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .op-chart-card { background: #fff; border: 1px solid #edf2f7; border-radius: 12px; padding: 12px; }
-    .op-chart-title { font-weight: 700; margin-bottom: 6px; }
-
-    .op-footer { display: flex; justify-content: space-between; align-items: center; color: #4a5568; font-size: 14px; }
-    .brand { font-weight: 700; color: #667eea; }
-
-    @media (max-width: 900px) {
-      .onepager { transform: scale(0.5); transform-origin: top left; width: 960px; height: 540px; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Soufflé Test Kitchen — Single-Company Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  *{box-sizing:border-box} body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#2d3748}
+  .wrap{max-width:1440px;margin:0 auto;min-height:100vh;display:grid;gap:20px;padding:20px}
+  .card{background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.1);padding:20px}
+  .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .logo{font-size:24px;font-weight:800;color:#667eea;letter-spacing:.5px}
+  .badge{background:linear-gradient(135deg,#ff6b6b,#ffd93d);color:#fff;padding:6px 12px;border-radius:14px;font-size:11px;font-weight:800}
+  .title{font-size:24px;font-weight:800} .subtitle{color:#718096;margin-top:4px}
+  .toolbar{position:sticky;top:10px;z-index:10;margin:10px 0;padding:8px;background:rgba(255,255,255,.9);border:1px solid #e2e8f0;border-radius:12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .btn{background:#667eea;color:#fff;border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(102,126,234,.25)}
+  .btn.ghost{background:#2d3748}
+  .controls{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+  .field{grid-column:span 3;display:flex;flex-direction:column;gap:6px}
+  .field.wide{grid-column:span 6}
+  label{font-size:12px;font-weight:700;color:#4a5568}
+  input,textarea,select{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;background:#fff;font:inherit}
+  textarea{min-height:64px;resize:vertical}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .chart-title{font-weight:800;margin-bottom:10px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
+  .kpi{background:#fff;border:1px solid #edf2f7;border-radius:12px;padding:12px;text-align:center}
+  .kpi .v{font-size:28px;font-weight:800;color:#2d3748}.kpi .l{font-size:12px;text-transform:uppercase;color:#718096;letter-spacing:.5px}
+  .metric{grid-column:span 3;background:#fff;border:1px solid #edf2f7;border-radius:12px;padding:10px}
+  .metric .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .metric input[type=range]{width:100%}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
+  .pill.green{background:#c6f6d5;color:#22543d}
+  .pill.yellow{background:#fefcbf;color:#744210}
+  .pill.orange{background:#fbd38d;color:#7b341e}
+  .pill.red{background:#fed7d7;color:#742a2a}
+  .onewrap{padding:16px}
+  .note{color:#4a5568;font-size:13px;margin-bottom:8px}
+  .one{width:1920px;height:1080px;background:#fff;color:#1a202c;border-radius:18px;padding:28px;display:grid;grid-template-rows:auto auto 1fr auto;gap:16px;border:1px solid #edf2f7}
+  .op-head{display:grid;grid-template-columns:80px 1fr 220px;gap:16px;align-items:center}
+  .op-logo{width:80px;height:80px;border-radius:12px;border:1px solid #e2e8f0;display:grid;place-items:center;overflow:hidden}
+  .op-logo img{max-width:100%;max-height:100%;object-fit:contain}
+  .op-title h1{margin:0;font-size:36px}.op-title p{margin:0;color:#4a5568}
+  .op-badge{justify-self:end;align-self:start;background:linear-gradient(135deg,#ff6b6b,#ffd93d);color:#fff;padding:8px 14px;border-radius:18px;font-weight:800;letter-spacing:.5px}
+  .op-about{background:#f7fafc;border:1px solid #edf2f7;border-radius:12px;padding:12px 14px;font-size:16px;color:#2d3748}
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cardbox{background:#fff;border:1px solid #edf2f7;border-radius:12px;padding:12px}
+  .foot{display:flex;justify-content:space-between;align-items:center;color:#4a5568;font-size:14px}.brandmark{font-weight:800;color:#667eea}
+  @media (max-width:1100px){.grid2{grid-template-columns:1fr}.one{transform:scale(.5);transform-origin:top left;width:960px;height:540px}}
+</style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <!-- Header -->
-    <div class="header">
-      <div class="logo-section">
-        <div class="logo">soufflé</div>
-        <div class="test-kitchen-badge">TEST KITCHEN</div>
-      </div>
-      <div class="title" id="pageTitle">Market Expansion Dashboard</div>
-      <div class="subtitle" id="pageSubtitle">Add logo & company context, then export a 16:9 one‑pager.</div>
+<div class="wrap">
+  <section class="card">
+    <div class="brand"><div class="logo">soufflé</div><div class="badge">TEST KITCHEN</div></div>
+    <div class="title" id="pageTitle">Single-Company Scorecard & One-Pager</div>
+    <div class="subtitle">Drop in any company, fill criteria, get a Direction, export a 16:9 slide.</div>
 
-      <!-- Controls -->
-      <div class="controls">
-        <div class="field">
-          <label for="companyName">Company name</label>
-          <input id="companyName" type="text" placeholder="e.g., Redmond" value="Acme Co." />
-        </div>
-        <div class="field">
-          <label for="logoUrl">Logo URL (optional)</label>
-          <input id="logoUrl" type="url" placeholder="https://…" />
-        </div>
-        <div class="field">
-          <label for="logoFile">Logo upload (optional)</label>
-          <input id="logoFile" type="file" accept="image/*" />
-        </div>
-        <div class="field wide">
-          <label for="about">About / context</label>
-          <textarea id="about" placeholder="Short description or positioning notes for this company."></textarea>
-        </div>
-
-        <div class="field">
-          <label for="metricMarket">Market Size</label>
-          <input id="metricMarket" type="text" value="$2.1B" />
-        </div>
-        <div class="field">
-          <label for="metricSegments">White Space Segments</label>
-          <input id="metricSegments" type="text" value="8" />
-        </div>
-        <div class="field">
-          <label for="metricConfidence">Data Confidence</label>
-          <input id="metricConfidence" type="text" value="91%" />
-        </div>
-        <div class="field">
-          <label for="metricTimeline">Time to Market</label>
-          <input id="metricTimeline" type="text" value="12mo" />
-        </div>
-
-        <div class="actions">
-          <button id="apply" class="btn">Apply to Dashboard + One‑Pager</button>
-          <button id="downloadPng" class="btn secondary">Download One‑Pager (PNG)</button>
-          <button id="downloadPdf" class="btn secondary">Download One‑Pager (PDF)</button>
-        </div>
+    <div class="toolbar">
+      <button id="apply" class="btn">Apply</button>
+      <button id="png" class="btn ghost">Download One-Pager (PNG)</button>
+      <button id="pdf" class="btn ghost">Download One-Pager (PDF)</button>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <span>Direction:</span> <span id="directionPill" class="pill yellow">Pilot & Validate</span>
       </div>
     </div>
 
-    <!-- Existing metrics + charts (quick preview area) -->
-    <div class="main-grid">
-      <div class="chart-section">
-        <div class="chart-title">Market Expansion Opportunities</div>
-        <div style="position:relative;height:300px;margin-bottom:10px;"><canvas id="marketChart"></canvas></div>
+    <div class="controls">
+      <div class="field"><label>Preset (optional)</label>
+        <select id="preset">
+          <option value="blank">Blank</option>
+          <option value="tennant">Tennant (sample)</option>
+          <option value="redmond">Redmond (placeholder)</option>
+        </select>
       </div>
-      <div class="chart-section">
-        <div class="chart-title">Product Design Evolution Needs</div>
-        <div style="position:relative;height:300px;margin-bottom:10px;"><canvas id="gapChart"></canvas></div>
+
+      <div class="field"><label>Company</label><input id="name" type="text" placeholder="e.g., Tennant Company"></div>
+      <div class="field"><label>Logo URL</label><input id="logoUrl" type="url" placeholder="https://…"></div>
+      <div class="field"><label>Logo Upload</label><input id="logoFile" type="file" accept="image/*"></div>
+      <div class="field wide"><label>About / Context</label><textarea id="about" placeholder="Short description, positioning, or scope notes."></textarea></div>
+
+      <div class="field"><label>Addressable Market</label><input id="kpiMarket" type="text" value="$—"></div>
+      <div class="field"><label>White Space Segments</label><input id="kpiSegments" type="text" value="—"></div>
+      <div class="field"><label>Data Confidence</label><input id="kpiConfidence" type="text" value="—"></div>
+      <div class="field"><label>Time to Market</label><input id="kpiTime" type="text" value="—"></div>
+
+      <div class="metric">
+        <label>Market Adjacency Potential</label>
+        <div class="row"><input id="m1" type="range" min="1" max="5" step="1" value="3"><strong id="m1v">3</strong></div>
+      </div>
+      <div class="metric">
+        <label>Design Modernization Need</label>
+        <div class="row"><input id="m2" type="range" min="1" max="5" step="1" value="3"><strong id="m2v">3</strong></div>
+      </div>
+      <div class="metric">
+        <label>Brand Awareness vs Product Appeal</label>
+        <div class="row"><input id="m3" type="range" min="1" max="5" step="1" value="3"><strong id="m3v">3</strong></div>
+      </div>
+      <div class="metric">
+        <label>Distribution Gap</label>
+        <div class="row"><input id="m4" type="range" min="1" max="5" step="1" value="3"><strong id="m4v">3</strong></div>
+      </div>
+      <div class="metric">
+        <label>Manufacturing Agility</label>
+        <div class="row"><input id="m5" type="range" min="1" max="5" step="1" value="3"><strong id="m5v">3</strong></div>
       </div>
     </div>
 
-    <!-- 16:9 One-Pager Preview + Export -->
-    <div class="onepager-wrapper">
-      <div class="onepager-note">One‑Pager Preview (exact 1920×1080 export area):</div>
-      <section id="onePager" class="onepager">
-        <div class="op-header">
-          <div class="op-logo"><img id="opLogo" alt="Company Logo" /></div>
-          <div class="op-title">
-            <h1 id="opTitle">Acme Co. — Market Expansion Dashboard</h1>
-            <p id="opSubtitle">Soufflé Test Kitchen — White Space & Design Strategy</p>
-          </div>
-          <div class="op-badge">16:9 ONE‑PAGER</div>
-        </div>
-
-        <div id="opAbout" class="op-about">Use the controls above to paste a logo URL or upload a logo, write a short context blurb, and update headline metrics. Then click “Download One‑Pager (PNG/PDF)”.</div>
-
-        <div class="op-metrics">
-          <div class="op-metric"><div id="opMarket" class="v">$2.1B</div><div class="l">Addressable Market</div></div>
-          <div class="op-metric"><div id="opSegments" class="v">8</div><div class="l">White Space Segments</div></div>
-          <div class="op-metric"><div id="opConfidence" class="v">91%</div><div class="l">Data Confidence</div></div>
-          <div class="op-metric"><div id="opTimeline" class="v">12mo</div><div class="l">Time to Market</div></div>
-        </div>
-
-        <div class="op-charts">
-          <div class="op-chart-card">
-            <div class="op-chart-title">Market Expansion Opportunities</div>
-            <canvas id="opMarketChart" width="600" height="320"></canvas>
-          </div>
-          <div class="op-chart-card">
-            <div class="op-chart-title">Product Design Evolution</div>
-            <canvas id="opGapChart" width="600" height="320"></canvas>
-          </div>
-        </div>
-
-        <div class="op-footer">
-          <div>Generated by the <span class="brand">Soufflé Test Kitchen</span></div>
-          <div id="opDate"></div>
-        </div>
-      </section>
+    <div class="grid2">
+      <div class="card">
+        <div class="chart-title">Radar: 5-Metric Score</div>
+        <div style="position:relative;height:320px"><canvas id="radarChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="chart-title">Matrix: Revenue Potential vs. Execution Complexity</div>
+        <div style="position:relative;height:320px"><canvas id="matrixChart"></canvas></div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <script>
-    // --- Charts (dashboard) ---
-    const doughnutData = {
-      labels: ['Education (Current)', 'Enterprise Wellness', 'Consumer Home', 'Healthcare', 'Hospitality'],
-      datasets: [{ data: [35, 25, 20, 12, 8],
-        backgroundColor: ['#667eea','#ff6b6b','#4ecdc4','#ffd93d','#9b59b6'], borderWidth: 0 }] };
+  <section class="onewrap card">
+    <div class="note">One-Pager (exact 1920×1080 export area)</div>
+    <div id="one" class="one">
+      <div class="op-head">
+        <div class="op-logo"><img id="opLogo" alt="Company Logo"></div>
+        <div class="op-title">
+          <h1 id="opTitle">Company — Market Expansion Dashboard</h1>
+          <p>Soufflé Test Kitchen — White Space & Design Strategy</p>
+        </div>
+        <div class="op-badge" id="opDirection">DIRECTION</div>
+      </div>
+
+      <div class="op-about" id="opAbout">Add an about/context blurb above and click Apply.</div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="v" id="k1">$—</div><div class="l">Addressable Market</div></div>
+        <div class="kpi"><div class="v" id="k2">—</div><div class="l">White Space Segments</div></div>
+        <div class="kpi"><div class="v" id="k3">—</div><div class="l">Data Confidence</div></div>
+        <div class="kpi"><div class="v" id="k4">—</div><div class="l">Time to Market</div></div>
+      </div>
+
+      <div class="charts">
+        <div class="cardbox">
+          <div style="font-weight:800;margin-bottom:6px">Radar: 5-Metric Score</div>
+          <canvas id="opRadar" width="600" height="320"></canvas>
+        </div>
+        <div class="cardbox">
+          <div style="font-weight:800;margin-bottom:6px">Matrix Position</div>
+          <canvas id="opMatrix" width="600" height="320"></canvas>
+        </div>
+      </div>
+
+      <div class="foot">
+        <div>Generated by the <span class="brandmark">Soufflé Test Kitchen</span></div>
+        <div id="stamp"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Helpers
+  const $ = id => document.getElementById(id);
+
+  // Presets (no storage, just quick loaders)
+  const PRESETS = {
+    blank: {
+      name:'', logoUrl:'', about:'',
+      kpiMarket:'$—', kpiSegments:'—', kpiConfidence:'—', kpiTime:'—',
+      m1:3, m2:3, m3:3, m4:3, m5:3
+    },
+    tennant: {
+      name:'Tennant Company',
+      logoUrl:'',
+      about:'Global cleaning equipment leader; adjacency with facilities & hygiene — experience via Excel hand dryer category informs channel & compliance patterns.',
+      kpiMarket:'$—', kpiSegments:'—', kpiConfidence:'—', kpiTime:'—',
+      m1:4, m2:3, m3:3, m4:4, m5:4
+    },
+    redmond: {
+      name:'Redmond (placeholder)',
+      logoUrl:'',
+      about:'Demo placeholder for brand discussions.',
+      kpiMarket:'$—', kpiSegments:'—', kpiConfidence:'—', kpiTime:'—',
+      m1:3, m2:3, m3:3, m4:3, m5:3
+    }
+  };
+
+  // Scoring
+  function computeScores(d){
+    const rev = (d.m1 + d.m3 + d.m4)/3;          // revenue potential
+    const comp = (d.m2 + (6 - d.m5))/2;          // execution complexity
+    let direction='Pilot & Validate', cls='yellow';
+    if(rev>=3.5 && comp<3) { direction='Pursue Now'; cls='green'; }
+    else if(rev>=3.5 && comp>=3) { direction='Pilot & Resource Plan'; cls='orange'; }
+    else if(rev<3.5 && comp<3) { direction='Quick Win / Content'; cls='yellow'; }
+    else { direction='Defer / Partner'; cls='red'; }
+    return {rev, comp, direction, cls};
+  }
+
+  // Charts
+  let radar, matrix, opRadar, opMatrix;
+  function renderCharts(d){
     const radarData = {
-      labels: ['User Experience', 'Manufacturing', 'Brand Position', 'Technology', 'Market Reach', 'Scalability'],
-      datasets: [
-        { label: 'Current', data: [7,8,6,5,7,6], backgroundColor: 'rgba(102,126,234,0.2)', borderColor:'#667eea', borderWidth:2 },
-        { label: 'Expansion Potential', data: [9,8,9,8,10,9], backgroundColor: 'rgba(255,107,107,0.2)', borderColor:'#ff6b6b', borderWidth:2 }
-      ]
+      labels:['Market Adjacency','Design Modernization','Brand vs Appeal','Distribution Gap','Mfg Agility'],
+      datasets:[{label:d.name||'Company',data:[d.m1,d.m2,d.m3,d.m4,d.m5],backgroundColor:'rgba(102,126,234,.2)',borderColor:'#667eea',borderWidth:2,pointRadius:3}]
     };
-
-    const marketChart = new Chart(document.getElementById('marketChart').getContext('2d'), {
-      type: 'doughnut', data: doughnutData, options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } } }
-      }
+    if(radar) radar.destroy();
+    radar = new Chart(document.getElementById('radarChart').getContext('2d'), {
+      type:'radar', data:radarData, options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:5,ticks:{stepSize:1}}},plugins:{legend:{display:false}}}
     });
-    const gapChart = new Chart(document.getElementById('gapChart').getContext('2d'), {
-      type: 'radar', data: radarData, options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { r: { beginAtZero: true, max: 10, ticks: { stepSize: 2 } } },
-        plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } } }
-      }
+    if(opRadar) opRadar.destroy();
+    opRadar = new Chart(document.getElementById('opRadar').getContext('2d'), {
+      type:'radar', data:radarData, options:{responsive:false,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:5,ticks:{stepSize:1}}},plugins:{legend:{display:false}}}
     });
 
-    // --- Charts (one-pager) ---
-    const opMarketChart = new Chart(document.getElementById('opMarketChart').getContext('2d'), {
-      type: 'doughnut', data: doughnutData, options: {
-        responsive: false, maintainAspectRatio: false,
-        plugins: { legend: { display: false } }
-      }
-    });
-    const opGapChart = new Chart(document.getElementById('opGapChart').getContext('2d'), {
-      type: 'radar', data: radarData, options: {
-        responsive: false, maintainAspectRatio: false,
-        scales: { r: { beginAtZero: true, max: 10, ticks: { stepSize: 2 } } },
-        plugins: { legend: { display: false } }
-      }
-    });
+    const {rev, comp} = computeScores(d);
+    const scatterData = { datasets:[{label:'Position', data:[{x:rev, y:comp}], backgroundColor:'#ff6b6b'}] };
+    const scales = { x:{min:1,max:5,title:{display:true,text:'Revenue Potential'}}, y:{min:1,max:5,title:{display:true,text:'Execution Complexity'}} };
+    if(matrix) matrix.destroy();
+    matrix = new Chart(document.getElementById('matrixChart').getContext('2d'), { type:'scatter', data: scatterData, options:{responsive:true,maintainAspectRatio:false,scales,plugins:{legend:{display:false}}} });
+    if(opMatrix) opMatrix.destroy();
+    opMatrix = new Chart(document.getElementById('opMatrix').getContext('2d'), { type:'scatter', data: scatterData, options:{responsive:false,maintainAspectRatio:false,scales,plugins:{legend:{display:false}}} });
+  }
 
-    // --- Apply controls to one-pager + header metrics ---
-    const $ = (id) => document.getElementById(id);
-    function applyAll() {
-      const name = $('companyName').value.trim() || 'Untitled Company';
-      const about = $('about').value.trim();
-      $('pageTitle').textContent = name + ' — Market Expansion Dashboard';
-      $('opTitle').textContent = name + ' — Market Expansion Dashboard';
-      $('opSubtitle').textContent = 'Soufflé Test Kitchen — White Space & Design Strategy';
-      $('opAbout').textContent = about || '—';
+  function gather(){
+    return {
+      name: $('name').value.trim(),
+      logoUrl: $('logoUrl').value.trim(),
+      about: $('about').value.trim(),
+      kpiMarket: $('kpiMarket').value.trim() || '$—',
+      kpiSegments: $('kpiSegments').value.trim() || '—',
+      kpiConfidence: $('kpiConfidence').value.trim() || '—',
+      kpiTime: $('kpiTime').value.trim() || '—',
+      m1:+$('m1').value, m2:+$('m2').value, m3:+$('m3').value, m4:+$('m4').value, m5:+$('m5').value
+    };
+  }
 
-      // Metrics
-      $('opMarket').textContent = $('metricMarket').value || '$—';
-      $('opSegments').textContent = $('metricSegments').value || '—';
-      $('opConfidence').textContent = $('metricConfidence').value || '—';
-      $('opTimeline').textContent = $('metricTimeline').value || '—';
+  function applyAll(){
+    const d = gather();
+    // Titles/KPIs
+    $('pageTitle').textContent = (d.name? d.name+' — ': '') + 'Single-Company Scorecard & One-Pager';
+    $('opTitle').textContent = (d.name||'Company') + ' — Market Expansion Dashboard';
+    $('opAbout').textContent = d.about || '—';
+    $('k1').textContent = d.kpiMarket; $('k2').textContent = d.kpiSegments; $('k3').textContent = d.kpiConfidence; $('k4').textContent = d.kpiTime;
+    // Logo
+    if(d.logoUrl) $('opLogo').src = d.logoUrl;
+    // Metrics labels
+    ['m1','m2','m3','m4','m5'].forEach(k => $(k+'v').textContent = $(k).value);
+    // Direction
+    const {direction, cls} = computeScores(d);
+    const pill = $('directionPill');
+    pill.textContent = direction; pill.className = 'pill ' + (cls);
+    $('opDirection').textContent = direction;
+    $('stamp').textContent = new Date().toLocaleString();
+    // Charts
+    renderCharts(d);
+  }
 
-      // Logo from URL (if provided)
-      const url = $('logoUrl').value.trim();
-      if (url) $('opLogo').src = url;
-
-      // Date stamp
-      $('opDate').textContent = new Date().toLocaleString();
-    }
-
-    $('apply').addEventListener('click', applyAll);
-
-    // Logo from file upload
-    $('logoFile').addEventListener('change', function(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(ev) { $('opLogo').src = ev.target.result; };
-      reader.readAsDataURL(file);
-    });
-
-    // --- Export helpers ---
-    async function downloadPNG() {
-      const el = $('onePager');
-      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-      const link = document.createElement('a');
-      link.download = 'souffle-onepager.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    }
-    async function downloadPDF() {
-      const el = $('onePager');
-      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-      const img = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
-      pdf.addImage(img, 'PNG', 0, 0, 1920, 1080);
-      pdf.save('souffle-onepager.pdf');
-    }
-    $('downloadPng').addEventListener('click', downloadPNG);
-    $('downloadPdf').addEventListener('click', downloadPDF);
-
-    // Initialize defaults
+  // Preset loader
+  $('preset').addEventListener('change', () => {
+    const p = PRESETS[$('preset').value] || PRESETS.blank;
+    $('name').value = p.name; $('logoUrl').value = p.logoUrl; $('about').value = p.about;
+    $('kpiMarket').value = p.kpiMarket; $('kpiSegments').value = p.kpiSegments; $('kpiConfidence').value = p.kpiConfidence; $('kpiTime').value = p.kpiTime;
+    $('m1').value = p.m1; $('m2').value = p.m2; $('m3').value = p.m3; $('m4').value = p.m4; $('m5').value = p.m5;
     applyAll();
-  </script>
+  });
+
+  // Logo upload
+  $('logoFile').addEventListener('change', e=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ev => { $('opLogo').src = ev.target.result; };
+    r.readAsDataURL(f);
+  });
+
+  // Buttons
+  $('apply').addEventListener('click', applyAll);
+  $('png').addEventListener('click', async ()=>{
+    const el = $('one'); const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+    const a = document.createElement('a'); a.download='souffle-onepager.png'; a.href = canvas.toDataURL('image/png'); a.click();
+  });
+  $('pdf').addEventListener('click', async ()=>{
+    const el = $('one'); const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+    const img = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'landscape', unit:'px', format:[1920,1080]});
+    pdf.addImage(img,'PNG',0,0,1920,1080); pdf.save('souffle-onepager.pdf');
+  });
+
+  // Init
+  applyAll();
+</script>
 </body>
 </html>
