@@ -1,19 +1,18 @@
 
-# Soufflé Test Kitchen 02 (MVP)
+# Soufflé Test Kitchen 02 (MVP) — Neutral Branding + Share Cards
 
-Static HTML prototype for the brand-facing market analysis dashboard.
+This package updates the header copy (neutral) and adds social share metadata & images.
 
 ## Deploy (Vercel via GitHub)
-1. Create a new public repo on GitHub (e.g., `souffle-test-kitchen-02`).
-2. Upload these files (index.html, vercel.json, README.md) to the repo root.
-3. In Vercel, click "New Project" → "Import Git Repository" → select the repo.
-4. Framework Preset: **Other**
-5. Root directory: `/` (repo root)
-6. Build Command: *(leave blank)*
-7. Output Directory: `/` (defaults to repo root for static sites)
-8. Deploy.
+1. Create a new public repo (e.g., `souffle-test-kitchen-02`).
+2. Upload: `index.html`, `vercel.json`, `README.md`, `social.png`, `favicon.png`.
+3. In Vercel: New Project → Import Git Repository → select repo.
+   - Framework Preset: **Other**
+   - Build Command: *(leave blank)*
+   - Output Directory: *(leave blank)*
+   - Root Directory: `/`
+4. Deploy.
 
-## Notes
-- Uses Chart.js from CDN; no build step required.
-- You can place any assets in `/public` and link them relatively (e.g., `/public/img.png`).
-- To add routes without `.html`, `cleanUrls` is enabled via `vercel.json`.
+### Social Share
+- `social.png` is used for Open Graph/Twitter previews.
+- `favicon.png` is the browser tab icon.
