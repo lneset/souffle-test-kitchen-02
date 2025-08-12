@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soufflé Test Kitchen - Market Analysis Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .test-kitchen-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        
+        .metrics-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid;
+        }
+        
+        .metric-card.market-size { border-left-color: #667eea; }
+        .metric-card.opportunities { border-left-color: #ff6b6b; }
+        .metric-card.confidence { border-left-color: #4ecdc4; }
+        .metric-card.timeline { border-left-color: #ffd93d; }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .opportunity-matrix {
+            grid-column: 1 / -1;
+        }
+        
+        .matrix-container {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .matrix-quadrants {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+        
+        .quadrant {
+            border: 1px dashed rgba(113, 128, 150, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .company-bubble {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .company-bubble:hover {
+            transform: scale(1.1);
+        }
+        
+        .concepts-section {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .concept-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .concept-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .concept-content {
+            padding: 20px;
+        }
+        
+        .concept-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .concept-description {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 15px;
+        }
+        
+        .concept-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .concept-metric {
+            text-align: center;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        
+        .concept-metric-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .concept-metric-label {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .priority-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .priority-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .priority-critical {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        .priority-high {
+            background: #feebc8;
+            color: #dd6b20;
+        }
+        
+        .priority-medium {
+            background: #e9d8fd;
+            color: #805ad5;
+        }
+        
+        .methodology-section {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .methodology-step {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: 600;
+        }
+        
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .step-description {
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .concepts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">soufflé</div>
+                <div class="test-kitchen-badge">TEST KITCHEN</div>
+            </div>
+            <div class="title">Yondr: Phone-Free Space Solutions Market Analysis</div>
+            <div class="subtitle">Expanding beyond education into enterprise and consumer markets</div>
+            
+            <div class="metrics-overview">
+                <div class="metric-card market-size">
+                    <div class="metric-value">$2.1B</div>
+                    <div class="metric-label">Addressable Market</div>
+                </div>
+                <div class="metric-card opportunities">
+                    <div class="metric-value">8</div>
+                    <div class="metric-label">White Space Segments</div>
+                </div>
+                <div class="metric-card confidence">
+                    <div class="metric-value">91%</div>
+                    <div class="metric-label">Data Confidence</div>
+                </div>
+                <div class="metric-card timeline">
+                    <div class="metric-value">12mo</div>
+                    <div class="metric-label">Time to Market</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="chart-section">
+                <div class="chart-title">Market Expansion Opportunities</div>
+                <div class="chart-container">
+                    <canvas id="marketChart"></canvas>
+                </div>
+                <div class="priority-badges">
+                    <div class="priority-badge priority-critical">Enterprise Ready</div>
+                    <div class="priority-badge priority-high">$10.3M Raised</div>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <div class="chart-title">Product Design Evolution Needs</div>
+                <div class="chart-container">
+                    <canvas id="gapChart"></canvas>
+                </div>
+                <div class="priority-badges">
+                    <div class="priority-badge priority-medium">B2B2C Complexity</div>
+                </div>
+            </div>
+            
+            <div class="chart-section opportunity-matrix">
+                <div class="chart-title">Market Expansion Matrix: Revenue Potential vs Design Complexity</div>
+                <div class="matrix-container">
+                    <div class="matrix-quadrants">
+                        <div class="quadrant">Low Revenue<br>High Complexity</div>
+                        <div class="quadrant">High Revenue<br>High Complexity</div>
+                        <div class="quadrant">Low Revenue<br>Low Complexity</div>
+                        <div class="quadrant">High Revenue<br>Low Complexity</div>
+                    </div>
+                    
+                    <!-- Market opportunity bubbles positioned on the matrix -->
+                    <div class="company-bubble" style="width: 90px; height: 90px; background: #ff6b6b; top: 15%; right: 20%; transform: translate(50%, -50%);">
+                        Enterprise<br>Workplace
+                    </div>
+                    <div class="company-bubble" style="width: 75px; height: 75px; background: #ffd93d; color: #2d3748; top: 25%; right: 35%; transform: translate(50%, -50%);">
+                        Healthcare<br>Facilities
+                    </div>
+                    <div class="company-bubble" style="width: 85px; height: 85px; background: #4ecdc4; bottom: 30%; right: 25%; transform: translate(50%, 50%);">
+                        Consumer<br>Home
+                    </div>
+                    <div class="company-bubble" style="width: 60px; height: 60px; background: #9b59b6; bottom: 40%; left: 35%; transform: translate(-50%, 50%);">
+                        Hospitality<br>Venues
+                    </div>
+                    <div class="company-bubble" style="width: 70px; height: 70px; background: #e74c3c; top: 45%; left: 15%; transform: translate(-50%, -50%);">
+                        Government<br>Facilities
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="concepts-section">
+            <div class="chart-title">Yondr Market Expansion Concepts: Beyond Education</div>
+            <div class="concepts-grid">
+                <div class="concept-card">
+                    <div class="concept-image">
+                        <div>AI Concept A<br>Enterprise Wellness<br><small>Generated via Midjourney</small></div>
+                    </div>
+                    <div class="concept-content">
+                        <div class="concept-title">Corporate Mindfulness Stations</div>
+                        <div class="concept-description">
+                            Sleek, furniture-integrated phone storage for workplace wellness zones and meeting rooms.
+                        </div>
+                        <div class="concept-metrics">
+                            <div class="concept-metric">
+                                <div class="concept-metric-value">$890M</div>
+                                <div class="concept-metric-label">Market Size</div>
+                            </div>
+                            <div class="concept-metric">
+                                <div class="concept-metric-value">6 mo</div>
+                                <div class="concept-metric-label">Development</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="concept-card">
+                    <div class="concept-image" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d);">
+                        <div>AI Concept B<br>Consumer Home Hub<br><small>Generated via Midjourney</small></div>
+                    </div>
+                    <div class="concept-content">
+                        <div class="concept-title">Family Digital Wellness Center</div>
+                        <div class="concept-description">
+                            Smart home device that creates family phone-free time with gamification and habit tracking.
+                        </div>
+                        <div class="concept-metrics">
+                            <div class="concept-metric">
+                                <div class="concept-metric-value">$1.2B</div>
+                                <div class="concept-metric-label">Market Size</div>
+                            </div>
+                            <div class="concept-metric">
+                                <div class="concept-metric-value">12 mo</div>
+                                <div class="concept-metric-label">Development</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="concept-card">
+                    <div class="concept-image" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);">
+                        <div>AI Concept C<br>Healthcare Integration<br><small>Generated via Midjourney</small></div>
+                    </div>
+                    <div class="concept-content">
+                        <div class="concept-title">Medical Facility Phone Management</div>
+                        <div class="concept-description">
+                            HIPAA-compliant system for hospitals, therapy centers, and medical practices requiring device-free zones.
+                        </div>
+                        <div class="concept-metrics">
+                            <div class="concept-metric">
+                                <div class="concept-metric-value">$650M</div>
+                                <div class="concept-metric-label">Market Size</div>
+                            </div>
+                            <div class="concept-metric">
+                                <div class="concept-metric-value">9 mo</div>
+                                <div class="concept-metric-label">Development</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="methodology-section">
+            <div class="chart-title">Soufflé Test Kitchen Methodology</div>
+            <div class="methodology-grid">
+                <div class="methodology-step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Market Intelligence</div>
+                    <div class="step-description">Comprehensive analysis of market size, growth trends, and competitive landscape</div>
+                </div>
+                <div class="methodology-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Design Gap Analysis</div>
+                    <div class="step-description">Systematic evaluation of aesthetic and functional shortcomings in existing solutions</div>
+                </div>
+                <div class="methodology-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Opportunity Scoring</div>
+                    <div class="step-description">Multi-dimensional framework weighing market potential against design intervention needs</div>
+                </div>
+                <div class="methodology-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Concept Generation</div>
+                    <div class="step-description">AI-powered ideation creating multiple strategic directions with business case validation</div>
+                </div>
+                <div class="methodology-step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Strategic Recommendations</div>
+                    <div class="step-description">Prioritized roadmap with ROI projections and implementation timelines</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Market Expansion Chart
+        const ctx1 = document.getElementById('marketChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Education (Current)', 'Enterprise Wellness', 'Consumer Home', 'Healthcare', 'Hospitality'],
+                datasets: [{
+                    data: [35, 25, 20, 12, 8],
+                    backgroundColor: ['#667eea', '#ff6b6b', '#4ecdc4', '#ffd93d', '#9b59b6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Product Evolution Chart
+        const ctx2 = document.getElementById('gapChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'radar',
+            data: {
+                labels: ['User Experience', 'Manufacturing', 'Brand Position', 'Technology', 'Market Reach', 'Scalability'],
+                datasets: [{
+                    label: 'Current Yondr',
+                    data: [7, 8, 6, 5, 7, 6],
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    borderColor: '#667eea',
+                    borderWidth: 2
+                }, {
+                    label: 'Market Expansion Potential',
+                    data: [9, 8, 9, 8, 10, 9],
+                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                    borderColor: '#ff6b6b',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                            stepSize: 2
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Add interactive hover effects to market opportunity bubbles
+        document.querySelectorAll('.company-bubble').forEach(bubble => {
+            bubble.addEventListener('click', function() {
+                const segment = this.textContent.trim();
+                let details = '';
+                
+                switch(segment) {
+                    case 'Enterprise\nWorkplace':
+                        details = `Enterprise Workplace Market\n\nMarket Size: $890M\nGrowth Rate: 15% CAGR\nKey Opportunity: Corporate wellness programs\nDevelopment Timeline: 6-9 months\nTarget: Fortune 500 companies`;
+                        break;
+                    case 'Consumer\nHome':
+                        details = `Consumer Home Market\n\nMarket Size: $1.2B\nGrowth Rate: 22% CAGR\nKey Opportunity: Family digital wellness\nDevelopment Timeline: 12-15 months\nTarget: Health-conscious families`;
+                        break;
+                    case 'Healthcare\nFacilities':
+                        details = `Healthcare Market\n\nMarket Size: $650M\nGrowth Rate: 8% CAGR\nKey Opportunity: HIPAA compliance needs\nDevelopment Timeline: 9-12 months\nTarget: Hospitals & therapy centers`;
+                        break;
+                    default:
+                        details = `Market Segment Analysis\n\nDetailed opportunity assessment\nRevenue projections\nCompetitive landscape\nImplementation roadmap`;
+                }
+                
+                alert(details);
+            });
+        });
+    </script>
+</body>
+</html>
