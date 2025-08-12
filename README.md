@@ -1,12 +1,14 @@
-# Soufflé Test Kitchen 02 — Single-Company + Insights
+# Soufflé Test Kitchen 02 — Actionable MVP
 
-**What’s new vs the basic single‑company build**
-- Auto‑written **Why now** line
-- **Drivers** (top 2) and **Constraints** (top 2) derived from the 5 metrics
-- **Next Moves (90 days)** tailored to the Direction
-- These narratives are also embedded in the **16:9 one‑pager**
+This version adds **actionable** features:
+- Criteria **weights** with sliders
+- **What‑If** scenario presets (Balanced, Speed‑to‑Market, Premiumization, Cost‑Down)
+- Weighted **Opportunity Scores** (bar) and **Target vs Current** (radar)
+- **Prioritized table** with Design Play + Why Now + TTM
+- **Auto‑generated design brief** (copy/download JSON)
 
 ## Deploy
-Upload `index.html` and `vercel.json` to your repo root and redeploy on Vercel.
+Upload `index.html` to the repo root (replace the old one). Vercel auto‑redeploys.
 
-_Last updated: 2025-08-12T21:09_
+## Edit Data
+For now, the segment data lives in `index.html` as a JS array named `segments`. Update or extend it per client.
